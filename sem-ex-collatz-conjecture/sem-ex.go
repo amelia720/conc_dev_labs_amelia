@@ -1,3 +1,9 @@
+//--------------------------------------------
+// Author: Amelia Hamulewicz (C00296605@setu.ie)
+// Created on 21/09/2025
+// Modified by: Amelia Hamulewicz
+//--------------------------------------------
+
 package main
 
 import (

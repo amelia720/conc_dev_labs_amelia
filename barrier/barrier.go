@@ -1,27 +1,10 @@
-
-//Barrier.go Template Code
-//Copyright (C) 2024 Dr. Joseph Kehoe
-
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
 //--------------------------------------------
-// Author: Joseph Kehoe (Joseph.Kehoe@setu.ie)
-// Created on 30/9/2024
-// Modified by:
+// Author: Amelia Hamulewicz (C00296605@setu.ie)
+// Created on 21/09/2025
+// Modified by: Amelia Hamulewicz
+// Group I worked with: Mark Lambert, Dorian Nowacki, Adam Noonan
 // Issues:
-// The barrier is not implemented!
+// The barrier is implemented!
 //--------------------------------------------
 
 package main
@@ -31,36 +14,53 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
 	"golang.org/x/sync/semaphore"
 )
 
+var count int // count completed go routines
+var countLock sync.Mutex
+var barrier = semaphore.NewWeighted(1) //
+var ctx2 = context.TODO()              // Create the context used by the barrier.
 
 // Place a barrier in this function --use Mutex's and Semaphores
 func doStuff(goNum int, wg *sync.WaitGroup) bool {
-	time.Sleep(time.Second)
-	fmt.Println("Part A",goNum)
+	time.Sleep(time.Second)      // wait 1 second as part A does its work
+	fmt.Println("Part A", goNum) // print that part A finished
 	//we wait here until everyone has completed part A
-	fmt.Println("PartB",goNum)
+	countLock.Lock() // Lock before reading or changing count (Mark Lambert helped me with this)
+	count++          //increment count
+	if count == 10 { // Check if this is the final goroutine.
+		countLock.Unlock() // unlock before continuing
+		barrier.Release(1) // create the first permit
+	} else {
+		countLock.Unlock()       // unlock before waiting
+		barrier.Acquire(ctx2, 1) // wait for the permit
+		barrier.Release(1)       // pass the permit to the next goroutine
+	}
+	fmt.Println("PartB", goNum) // This can only run after all goroutines complete Part A.
 	wg.Done()
 	return true
 }
 
-
 func main() {
-	totalRoutines:=10
-	var wg sync.WaitGroup
-	wg.Add(totalRoutines)
+	totalRoutines := 10
+	var wg sync.WaitGroup // create a wait group
+	wg.Add(totalRoutines) // add 10 go routines to the wait group
 	//we will need some of these
-	ctx := context.TODO()
-	var theLock sync.Mutex
-	sem := semaphore.NewWeighted(int64(totalRoutines))
-	theLock.Lock()
+	ctx := context.TODO() //create context and store it in ctx
+	// Mark Lambert explained that the context is basically
+	// something that gets the compiler not to throw an error
+	var theLock sync.Mutex                             // create the mutex
+	sem := semaphore.NewWeighted(int64(totalRoutines)) // create a weighted semaphore
+	theLock.Lock()                                     // lock before reading or changing go routines
 	sem.Acquire(ctx, 1)
-	for i := range totalRoutines {//create the go Routines here
-		go doStuff(i, &wg)
+	barrier.Acquire(ctx2, 1)
+	for i := range totalRoutines { //create the go Routines here
+		go doStuff(i, &wg) // i is the goroutine number and &wg gives it the WaitGroup.
 	}
-	sem.Release(1)
-	theLock.Unlock()
-	
+	sem.Release(1)   //return the permit
+	theLock.Unlock() // unlock after creating the go routines
+
 	wg.Wait() //wait for everyone to finish before exiting
 }

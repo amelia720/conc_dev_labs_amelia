@@ -1,15 +1,22 @@
+//--------------------------------------------
+// Author: Amelia Hamulewicz (C00296605@setu.ie)
+// Created on 21/09/2025
+// Modified by: Amelia Hamulewicz
+//--------------------------------------------
+
 package main
 
 import (
-    "fmt"
-    "sync"
+	"fmt"
+	"sync"
 )
-//Global variables shared between functions --A BAD IDEA
+
+// Global variables shared between functions --A BAD IDEA
 var wg sync.WaitGroup
 var total int64
 
 func adds(n int, theLock *sync.Mutex) bool {
-	for i:=0; i< n; i++ {
+	for i := 0; i < n; i++ {
 		theLock.Lock()
 		total++
 		theLock.Unlock()
@@ -21,19 +28,19 @@ func adds(n int, theLock *sync.Mutex) bool {
 func main() {
 
 	//theLock will be passed by reference between go routines
-	//better than using a global variable 
+	//better than using a global variable
 	var theLock sync.Mutex
-	
+
 	total = 0
 	//the waitgroup is used as a barrier
 	// init it to number of go routines
 	wg.Add(10)
-	
+
 	//for loop using range option
-	for i:=range 10 {
+	for i := range 10 {
 		//starting
 		fmt.Println(i)
-		go adds(1000,&theLock)
+		go adds(1000, &theLock)
 	}
 	wg.Wait() //wait here until everyone (10 go routines) is done
 	fmt.Println(total)
