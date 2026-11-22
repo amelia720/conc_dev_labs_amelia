@@ -19,7 +19,7 @@
 // Modified by: Amelia Hamulewicz (C00296605@setu.ie)
 // Date modifed: 21/09/2026
 // Description:
-//Uses an unbuffered channel so both go routines finish Part A before either starts Part B.
+// Uses an unbuffered channel so both go routines finish Part A before either starts Part B.
 // --------------------------------------------
 
 package main
