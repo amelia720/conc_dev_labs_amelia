@@ -15,8 +15,8 @@ Open the main project folder in terminal, then run one exercise at a time using 
 | 8. Signalling | Uses an unbuffered channel so both go routines finish Part A before either starts Part B. | `go run ./signalling` |
 | 9. Dining Philosophers | An exercise based on the Dining Philosophers problem. | `go run ./DiningPhilosophers` |
 | 10. Collatz Conjecture | An exercise based on the Collatz conjecture. | `go run ./sem-ex-collatz-conjecture` |
-| 11. Producer-Consumer | Uses a buffered channel to pass events from a producer to a consumer. | `go run ./Producer-Consumer` |
-| 12. Readers-Writers | Uses mutexes to allow multiple readers or one writer at a time. | `go run ./Reader-Writer` |
+| 11. Producer-Consumer | Uses a buffered channel to pass events from a producer to a consumer. | `go run ./producer-consumer` |
+| 12. Readers-Writers | Uses mutexes to allow multiple readers or one writer at a time. | `go run ./reader-writer` |
 
 ## Credits
 
